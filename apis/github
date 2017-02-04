@@ -1,4 +1,5 @@
 local JSON = dofile("apis/dkjson")
+os.loadAPI("apis/Base64")
 
 -- Build a github API url, with authorization headers.
 local function getAPI(path, auth)
@@ -166,8 +167,42 @@ Repository.tree = function(self, sha)
 	return __repoPriv[self].trees[sha]
 end
 Repository.__tostring = function(self) return ("Repo@%s/%s"):format(self.user, self.name) end
-uploadFile = function(localPath,remotePath,message,content,sha,branch)
-	
+createFile = function(remotePath,message,content,branch,name,email)
+	content = Base64.encode(content)
+	local data = {
+		message = message,
+		committer = {
+			name = name,
+			email = email,
+		},
+		content = content,
+		branch = branch
+	}
+	local raw = JSON.encode(data)
+	local nd = {
+		url = "https://api.github.com/repos/"..remotePath,
+		parameters = raw
+	}
+	return http.post("https://ccgit.000webhostapp.com/put.php",nd)
+end
+uploadFile = function(remotePath,message,content,branch,sha,name,email)
+	content = Base64.encode(content)
+	local data = {
+		message = message,
+		committer = {
+			name = name,
+			email = email,
+		},
+		content = content,
+		sha = sha,
+		branch = branch,
+	}
+	local raw = JSON.encode(data)
+	local nd = {
+		url = "https://api.github.com/repos/"..remotePath,
+		parameters = raw
+	}
+	return http.post("https://ccgit.000webhostapp.com/put.php",nd)
 end
 -- Export members
 local github = {}
