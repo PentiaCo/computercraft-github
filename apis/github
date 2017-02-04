@@ -166,7 +166,9 @@ Repository.tree = function(self, sha)
 	return __repoPriv[self].trees[sha]
 end
 Repository.__tostring = function(self) return ("Repo@%s/%s"):format(self.user, self.name) end
-
+uploadFile = function(localPath,remotePath,message,content,sha,branch)
+	
+end
 -- Export members
 local github = {}
 github.Repository = Repository
